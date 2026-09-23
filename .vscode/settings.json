@@ -1,0 +1,9 @@
+{
+  "coqtop.binPath": "C:\\Coq\\bin",
+	"coq.format.indentAfterBullet": "indent",
+	"coq.format.unindentOnCloseProof": true,
+	"coq.format.indentAfterOpenProof": true,
+	"editor.formatOnType": true,
+	"editor.unicodeHighlight.ambiguousCharacters": false,
+	"editor.tabSize": 2
+}
