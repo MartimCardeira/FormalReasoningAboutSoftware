@@ -1,4 +1,4 @@
-(** * Basics: Functional Programming in Coq *)
+ (** * Basics: Functional Programming in Coq *)
 
 (* REMINDER:
 
@@ -1090,7 +1090,7 @@ Proof.
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m o H1 H2. rewrite -> H1. rewrite -> H2. reflexivity. Qed.
 (** [] *)
 
 (** The [Admitted] command tells Coq that we want to skip trying
@@ -1137,11 +1137,19 @@ Proof.
 
     Use [mult_n_Sm] and [mult_n_0] to prove the following
     theorem.  (Recall that [1] is [S O].) *)
+Check mult_n_Sm.
+
+Check mult_n_O.
 
 Theorem mult_n_1 : forall p : nat,
   p * 1 = p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros p.
+  rewrite <- mult_n_Sm.
+  rewrite <- mult_n_O.
+  simpl.
+  reflexivity.
+Qed.
 
 (** [] *)
 
