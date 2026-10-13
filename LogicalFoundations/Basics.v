@@ -1346,11 +1346,25 @@ Qed.
     Hint 2: When you reach a contradiction in the hypotheses, focus on
     how to [rewrite] with that contradiction. *)
 
+(* So basically do case analysis, and if the first part is true, prove that the other is true?*)
+(* Inductive bool starts with true then false *)
+
 Theorem andb_true_elim2 : forall b c : bool,
   andb b c = true -> c = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros b c.
+  destruct b eqn:Eb.
+    - destruct c eqn:Ec.
+      (* b = true, c = true *)
+      + simpl. reflexivity.
+      (* b = true, c = false *)
+      + simpl. intros H. rewrite H. reflexivity.
+    - destruct c eqn:Ec.
+      (* b = false, c = true *)
+      + simpl. reflexivity.
+      (* b = false, c = false *)
+      + simpl. intros H. rewrite H. reflexivity.
+Qed.
 
 (** Before closing the chapter, let's mention one final
     convenience.  As you may have noticed, many proofs perform case
