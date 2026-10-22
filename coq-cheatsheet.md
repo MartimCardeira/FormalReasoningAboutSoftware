@@ -100,6 +100,12 @@ All match on the **first** argument unless noted.
 | `oddmembers l` | | keep odd elements (yours) |
 | `countoddmembers l` | | `length (oddmembers l)` |
 | `alternate l1 l2` | | interleave (3-star, not done) |
+| `eqblist l1 l2` | | list equality test, bool (yours) |
+| `nth_bad l n` | | n-th element, `42` if out of range (the bad version) |
+| `natoption` (`Some n`, `None`) | | optional nat |
+| `nth_error l n` | | `Some a` or `None` |
+| `option_elim d o` | | value inside `o`, or `d` for `None` |
+| `hd_error l` | | `Some h` or `None` (yours) |
 
 ## Bags (a bag is a `natlist`)
 | Name | Meaning | Status |
@@ -108,6 +114,18 @@ All match on the **first** argument unless noted.
 | `count v s` | occurrences of `v` in `s` | yours |
 | `add v s` | `v :: s` | yours |
 | `sum`, `member`, `remove_one`, `remove_all`, `included` | | not done (3-star, optional) |
+
+## Ids and partial maps (Lists.v)
+| Name | Meaning |
+|---|---|
+| `id` / `Id n` | wrapper around a nat, used as a key |
+| `eqb_id x1 x2` | key equality test, bool |
+| `partial_map` | `empty` or `record i v m`, like a list of (key, value) |
+| `update d x v` | `record x v d` (shadows old entry, no deletion) |
+| `find x d` | `None` for `empty`, otherwise first matching record |
+
+## Modules
+`.v` files are modules (`LF.Basics`, `LF.Induction`, `LF.Lists`). Blocks inside `Lists.v`: `NatList`, `PartialMap`. Blocks in `Basics.v`: `Playground`, `TuplePlayground`, `NatPlayground`, `NatPlayground2`, `LateDays`. Names defined inside a block do not leak out.
 
 ## Proven results on pairs and lists
 | Name | Statement | Source |
@@ -120,6 +138,21 @@ All match on the **first** argument unless noted.
 | `tl_length_pred` | `pred (length l) = length (tl l)` (needs `destruct l`) | Lists |
 | `app_assoc` | `(l1 ++ l2) ++ l3 = l1 ++ (l2 ++ l3)` | Lists |
 | `app_length` | `length (l1 ++ l2) = length l1 + length l2` | Lists |
+| `rev_length` | `length (rev l) = length l` | Lists |
+| `app_nil_r` | `l ++ [] = l` | Lists (yours) |
+| `rev_app_distr` | `rev (l1 ++ l2) = rev l2 ++ rev l1` | Lists (yours) |
+| `rev_involutive` | `rev (rev l) = l` | Lists (yours) |
+| `app_assoc4` | four-list associativity | Lists (yours) |
+| `eqblist_refl` | `true = eqblist l l` | Lists (yours) |
+| `count_member_nonzero` | `1 <=? count 1 (1 :: s) = true` | Lists (yours) |
+| `leb_n_Sn` | `n <=? S n = true` | Lists |
+| `rev_injective` | `rev l1 = rev l2 -> l1 = l2` | Lists (yours) |
+| `option_elim_hd` | `hd default l = option_elim default (hd_error l)` | Lists (yours) |
+| `eqb_id_refl` | `eqb_id x x = true` | Lists (yours) |
+| `update_eq` | `find x (update d x v) = Some v` | Lists (yours) |
+| `update_neq` | `eqb_id x y = false -> find x (update d y o) = find x d` | Lists (yours) |
+
+Skipped (3-star or advanced, not required): `nonzeros_app`, `remove_does_not_increase_count`, `involution_injective`, `bag_count_sum`.
 
 ## Tactic patterns
 | Pattern | Use |
@@ -129,6 +162,8 @@ All match on the **first** argument unless noted.
 | `simpl. rewrite -> IH. reflexivity.` | typical inductive step |
 | `assert (H : P).` | prove a side fact first (two goals) |
 | `replace (t) with (u).` | swap a named subterm (side goal `u = t`) |
+| `discriminate H.` | close a case where `H` equates two different constructors (`simpl in H` first) |
+| `intros l1 l2.` first | needed before `rewrite` when variables are still under a `forall` |
 
 ## Look things up in Coq
 ```coq
