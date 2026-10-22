@@ -220,22 +220,32 @@ Proof.
 Theorem mul_0_r : forall n:nat,
   n * 0 = 0.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [| n' IHn'].
+  (* base case *)
+  - simpl. reflexivity.
+  - simpl. rewrite -> IHn'. reflexivity. Qed.
+
 
 Theorem plus_n_Sm : forall n m : nat,
   S (n + m) = n + (S m).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite -> IHn'. reflexivity. Qed.
 
 Theorem add_comm : forall n m : nat,
   n + m = m + n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m. induction n as [| n' IHn'].
+  - simpl. rewrite add_0_r. reflexivity. 
+  - simpl. rewrite -> IHn'. simpl. rewrite plus_n_Sm. reflexivity. Qed.
 
 Theorem add_assoc : forall n m p : nat,
   n + (m + p) = (n + m) + p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. reflexivity. Qed. 
 (** [] *)
 
 (** **** Exercise: 2 stars, standard (double_plus)
@@ -252,7 +262,9 @@ Fixpoint double (n:nat) :=
 
 Lemma double_plus : forall n, double n = n + n .
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. rewrite plus_n_Sm. reflexivity. Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard (eqb_refl)
@@ -262,7 +274,9 @@ Proof.
 Theorem eqb_refl : forall n : nat,
   (n =? n) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. reflexivity. Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (even_S)
@@ -277,7 +291,9 @@ Proof.
 Theorem even_S : forall n : nat,
   even (S n) = negb (even n).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - rewrite IHn'. simpl. rewrite negb_involutive. reflexivity. Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -466,13 +482,15 @@ Proof.
     whereas the informal proof reminds the reader several times where
     things stand). *)
 
+Check add_comm.
+
 (** **** Exercise: 2 stars, advanced, especially useful (add_comm_informal)
 
     Translate your solution for [add_comm] into an informal proof:
 
     Theorem: Addition is commutative.
 
-    Proof: (* FILL IN HERE *)
+    Proof: no bruh
 *)
 
 (* Do not modify the following line: *)
@@ -487,7 +505,15 @@ Definition manual_grade_for_add_comm_informal : option (nat*string) := None.
 
     Theorem: [(n =? n) = true] for any [n].
 
-    Proof: (* FILL IN HERE *)
+    Proof: Proof by induction
+
+      base case n = 0:
+
+          0 =? 0 is true since 0 = 0
+
+      assume P(n') holds, prove for P(S n'):
+
+      P(S n'): (S n' =? S n') = true
 *)
 
 (* Do not modify the following line: *)
@@ -528,7 +554,9 @@ Check leb.
 Theorem plus_leb_compat_l : forall n m p : nat,
   n <=? m = true -> (p + n) <=? (p + m) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p H. induction p as [| p' IHn'].
+  - simpl. rewrite H. reflexivity.
+  - simpl. rewrite IHn'. reflexivity. Qed.
 
 (** [] *)
 
@@ -600,7 +628,8 @@ Proof.
 Theorem add_shuffle3' : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p. induction n as [| n' IHn']. simpl. reflexivity.
+  simpl. rewrite IHn'. rewrite plus_n_Sm. reflexivity. Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -698,7 +727,8 @@ Abort.
 
 Lemma double_incr : forall n : nat, double (S n) = S (S (double n)).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [| n' IHn']. simpl. reflexivity.
+  simpl. reflexivity. Qed.
 
 (** Now define a similar doubling function for [bin]. *)
 
