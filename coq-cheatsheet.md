@@ -69,24 +69,62 @@ All match on the **first** argument unless noted.
 | `mul_comm` | `m * n = n * m` | Induction |
 | `leb_refl` | `(n <=? n) = true` | Induction |
 
+## Notations
+| Notation | Meaning | Notes |
+|---|---|---|
+| `x + y`, `x - y`, `x * y` | `plus`, `minus`, `mult` | nat |
+| `x =? y`, `x <=? y`, `x <? y` | `eqb`, `leb`, `ltb` | return bool |
+| `x && y`, `x \|\| y` | `andb`, `orb` | bool |
+| `(x, y)` | `pair x y` | pair of nats |
+| `x :: l` | `cons x l` | level 60, right associative |
+| `[ ]` | `nil` | empty list |
+| `[x; ...; y]` | `cons x (... (cons y nil) ...)` | list literal |
+| `l1 ++ l2` | `app l1 l2` | level 60, right associative |
+
+`1 :: 2 :: 3 :: nil` means `1 :: (2 :: (3 :: nil))`, which is `[1;2;3]`.
+
 ## Pairs and lists (Lists.v)
 | Name | Notation | Meaning |
 |---|---|---|
 | `natprod` / `pair` | `(x, y)` | pair of nats |
-| `fst`, `snd` | | components |
-| `swap_pair` | | swaps a pair |
-| `natlist` / `cons`, `nil` | `x :: l`, `[]`, `[1;2;3]` | list of nats |
-| `repeat n count` | | `count` copies of `n` |
-| `length l` | | |
-| `app l1 l2` | `l1 ++ l2` | recurses on `l1` |
-| `hd default l`, `tl l` | | head, tail |
+| `fst p`, `snd p` | | components of a pair |
+| `swap_pair p` | | `(x,y)` becomes `(y,x)` |
+| `natlist` / `cons`, `nil` | `x :: l`, `[]` | list of nats |
+| `repeat n count` | | list of `count` copies of `n` |
+| `length l` | | `nil => 0`, `h :: t => S (length t)` |
+| `app l1 l2` | `l1 ++ l2` | recurses on `l1`: `h :: (app t l2)` |
+| `hd default l` | | head, or `default` for `nil` |
+| `tl l` | | tail, `nil` for `nil` |
+| `rev l` | | `rev t ++ [h]` |
 | `nonzeros l` | | drop zeros (yours) |
-| `oddmembers l` | | keep odds (yours) |
+| `oddmembers l` | | keep odd elements (yours) |
+| `countoddmembers l` | | `length (oddmembers l)` |
+| `alternate l1 l2` | | interleave (3-star, not done) |
+
+## Bags (a bag is a `natlist`)
+| Name | Meaning | Status |
+|---|---|---|
+| `bag` | `Definition bag := natlist` | defined |
+| `count v s` | occurrences of `v` in `s` | yours |
+| `add v s` | `v :: s` | yours |
+| `sum`, `member`, `remove_one`, `remove_all`, `included` | | not done (3-star, optional) |
+
+## Proven results on pairs and lists
+| Name | Statement | Source |
+|---|---|---|
+| `surjective_pairing` | `p = (fst p, snd p)` (needs `destruct p`) | Lists |
+| `snd_fst_is_swap` | `(snd p, fst p) = swap_pair p` | Lists (yours) |
+| `fst_swap_is_snd` | `fst (swap_pair p) = snd p` | Lists (yours) |
+| `add_inc_count` | `count v (add v s) = S (count v s)` | Lists (yours) |
+| `nil_app` | `[] ++ l = l` | Lists |
+| `tl_length_pred` | `pred (length l) = length (tl l)` (needs `destruct l`) | Lists |
+| `app_assoc` | `(l1 ++ l2) ++ l3 = l1 ++ (l2 ++ l3)` | Lists |
+| `app_length` | `length (l1 ++ l2) = length l1 + length l2` | Lists |
 
 ## Tactic patterns
 | Pattern | Use |
 |---|---|
-| `destruct x as [\| n']` | case split, no IH. One part per constructor. |
+| `destruct x as [\| n']` | case split, no IH. One part per constructor. Pairs: `destruct p as [n m]`. |
 | `induction n as [\| n' IHn']` | case split plus IH in the recursive case |
 | `simpl. rewrite -> IH. reflexivity.` | typical inductive step |
 | `assert (H : P).` | prove a side fact first (two goals) |
