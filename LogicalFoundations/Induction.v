@@ -730,6 +730,8 @@ Proof.
   intros n. induction n as [| n' IHn']. simpl. reflexivity.
   simpl. reflexivity. Qed.
 
+Print plus.
+
 (** Now define a similar doubling function for [bin]. *)
 
 Definition double_bin (b:bin) : bin
