@@ -9,3 +9,11 @@
 
 # Built Visual Studio Code Extensions
 *.vsix
+# Coq build artifacts
+*.vo
+*.vok
+*.vos
+*.glob
+.*.aux
+.lia.cache
+.nia.cache
