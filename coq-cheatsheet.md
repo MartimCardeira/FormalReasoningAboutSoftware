@@ -172,3 +172,10 @@ Check add_comm.    (* statement of a theorem *)
 Locate "+".        (* what a notation means *)
 Search (_ + 0).    (* find theorems matching a pattern *)
 ```
+
+## Why `simpl` / `reflexivity` get stuck
+A `match` only computes when its argument has a visible constructor (`O`, `S _`, `nil`, `::`, `(x, y)`, `true`...). If the argument is a bare variable, the function is stuck.
+- `n + 0` is stuck because `plus` matches on its first argument (`n`). Fix: `induction n`.
+- `fst p` is stuck for a variable `p`. Fix: `destruct p as [n m]`.
+- `rewrite` also needs the exact pattern to be visible, so `simpl` first, and `intros` first if variables are still under a `forall`.
+- Pick the variable the stuck function matches on.
