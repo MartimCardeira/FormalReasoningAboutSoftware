@@ -209,6 +209,27 @@ Skipped (3-star, not required): `partition`, `map_rev`, `fold_map`.
 | `discriminate H.` | close a case where `H` equates two different constructors (`simpl in H` first) |
 | `intros l1 l2.` first | needed before `rewrite` when variables are still under a `forall` |
 
+## Tactics (Tactics.v)
+**`apply` vs `rewrite`:** `rewrite H` (`H : a = b`) replaces `a` by `b` *inside* the goal; it works anywhere but only with equalities. `apply H` matches `H`'s *conclusion* against the *whole* goal, filling in `H`'s variables (`f_equal` on `S n = S m` sets `f := S, x := n, y := m`). The goal is then closed, or replaced by `H`'s premises. Use rewrite to change part of the goal, and apply when a lemma concludes exactly the goal.
+
+| Tactic | Effect |
+|---|---|
+| `apply H` | goal matches `H`'s conclusion; new goals are `H`'s premises |
+| `apply H in H2` | forward reasoning: `H : P -> Q`, `H2 : P` becomes `H2 : Q` |
+| `apply H with (m := e)` | supply a variable that matching can't determine (e.g. the middle of `trans_eq`) |
+| `symmetry` / `symmetry in H` | `a = b` becomes `b = a` (needed before `apply` when sides are swapped; `rewrite <-` doesn't care) |
+| `transitivity y` | goal `x = z` splits into `x = y` and `y = z` |
+| `injection H as H1 H2` | constructors are injective: `x :: l1 = y :: l2` gives `H1 : x = y`, `H2 : l1 = l2`. One name per constructor argument |
+| `discriminate H` | `H` equates *different* constructors (`[] = x :: l`, `O = S n`), so H is a contradiction and the goal is closed |
+| `f_equal` | goal `f x = f y` becomes `x = y` (any function; the converse of injection) |
+| `simpl in H`, `rewrite ... in H`, `unfold f in H` | the same tactics on a hypothesis |
+| `unfold f` | replace a defined name by its body when `simpl` won't (e.g. `square`) |
+| `specialize H with (n := 1)` | fix a `forall` variable in `H` for good |
+| `generalize dependent n` | put `n` back under the `forall` so the IH stays general (do it before `induction`) |
+| `destruct (e) eqn:E` | case split on an expression like `n =? 3`, keeping `E : (n =? 3) = true` in the context |
+
+Useful Tactics.v lemmas: `f_equal : x = y -> f x = f y`, `trans_eq : n = m -> m = o -> n = o`, `S_injective : S n = S m -> n = m`, `eqb_0_l : 0 =? n = true -> n = 0`, `double_injective : double n = double m -> n = m`.
+
 ## Look things up in Coq
 ```coq
 Print plus.        (* definition *)
