@@ -154,11 +154,53 @@ All match on the **first** argument unless noted.
 
 Skipped (3-star or advanced, not required): `nonzeros_app`, `remove_does_not_increase_count`, `involution_injective`, `bag_count_sum`.
 
+## Polymorphism (Poly.v)
+- `list : Type -> Type`, so `list nat : Type`. Compare `natlist : Type`. Every element of a `list X` has the same type `X`.
+- Constructors are functions: `nil : forall X : Type, list X`, `cons : forall X : Type, X -> list X -> list X`. `forall X : Type, ...` is a function type whose result mentions the argument.
+- Type arguments: explicit `nil nat`, inferred `nil _`, implicit after `Arguments nil {X}.` (or `{X : Type}` in a definition).
+- `@f` makes implicit arguments explicit again: `@nil nat`. Needed when nothing pins down `X`: `Fail Definition mynil := nil.` Fixes: `Definition mynil : list nat := nil.`, `(nil : list nat)`, `@nil nat`.
+- Argument annotations can be omitted when Coq can infer them from use (`repeat'`), but keep them for readability.
+- Parse gotcha: `f @g X` is a syntax error; write `f (@g X)`.
+- `prod X Y` is the type `X * Y`. Build a pair with `(a, b)` (`pair a b`), not `prod a b`.
+- `->` is right-associative: `(X * Y -> Z) -> X -> Y -> Z` means the first argument is a function.
+- `Check e.` prints the type; `Check e : T.` fails unless `e` has type `T`. `Fail Check ...` records an expected error and still compiles.
+- Use `let (a, b) := e in body` (short for `match e with (a, b) => body end`) to compute `e` once and destructure it.
+- `bool` vs `Prop`: `&&` (`andb`) and `||` (`orb`) compute bools and can go in `filter`; `/\` and `\/` are propositions (Logic).
+- First-class functions: pass (`filter even l`), return (`plus 3`), store, or write anonymously (`fun n => n * 2`).
+
+| Name | Type / meaning |
+|---|---|
+| `combine` | `list X -> list Y -> list (X*Y)`, zip; stops at the shorter list |
+| `split` | `list (X*Y) -> list X * list Y`, unzip (yours) |
+| `nth_error`, `hd_error` | `list X -> ... -> option X` |
+| `filter` | `(X -> bool) -> list X -> list X`, keeps the elements where the test is `true` |
+| `map` | `(X -> Y) -> list X -> list Y` |
+| `flat_map` | `(X -> list Y) -> list X -> list Y`, map then concatenate (yours) |
+| `option_map` | `(X -> Y) -> option X -> option Y` |
+| `fold` | `(X -> Y -> Y) -> list X -> Y -> Y`, `fold f [x1;x2] b = f x1 (f x2 b)` |
+| `constfun x` | `nat -> X`, ignores its argument |
+| `prod_curry` / `prod_uncurry` | convert between `X * Y -> Z` and `X -> Y -> Z` (uncurry yours) |
+
+## Proven results (Poly.v, polymorphic)
+| Name | Statement | Source |
+|---|---|---|
+| `app_nil_r` | `l ++ [] = l` | Poly (yours) |
+| `app_assoc` | `l ++ m ++ n = (l ++ m) ++ n` | Poly (yours) |
+| `app_length` | `length (l1 ++ l2) = length l1 + length l2` | Poly (yours) |
+| `rev_app_distr` | `rev (l1 ++ l2) = rev l2 ++ rev l1` | Poly (yours) |
+| `rev_involutive` | `rev (rev l) = l` | Poly (yours) |
+| `fold_length_correct` | `fold_length l = length l` | Poly (yours) |
+| `uncurry_curry` | `prod_curry (prod_uncurry f) x y = f x y` | Poly (yours) |
+| `curry_uncurry` | `prod_uncurry (prod_curry f) p = f p` (needs `destruct p`) | Poly (yours) |
+
+Skipped (3-star, not required): `partition`, `map_rev`, `fold_map`.
+
 ## Tactic patterns
 | Pattern | Use |
 |---|---|
 | `destruct x as [\| n']` | case split, no IH. One part per constructor. Pairs: `destruct p as [n m]`. |
 | `induction n as [\| n' IHn']` | case split plus IH in the recursive case |
+| `induction l as [\| x l' IHl']` | lists: one name per constructor argument (head, tail), then the IH. Too few names and Coq invents `IH<tailname>` |
 | `simpl. rewrite -> IH. reflexivity.` | typical inductive step |
 | `assert (H : P).` | prove a side fact first (two goals) |
 | `replace (t) with (u).` | swap a named subterm (side goal `u = t`) |
@@ -171,6 +213,8 @@ Print plus.        (* definition *)
 Check add_comm.    (* statement of a theorem *)
 Locate "+".        (* what a notation means *)
 Search (_ + 0).    (* find theorems matching a pattern *)
+Search (nat -> nat -> nat).  (* find functions by type *)
+Compute f args.    (* see what a function actually returns; use when reflexivity fails *)
 ```
 
 ## Why `simpl` / `reflexivity` get stuck
