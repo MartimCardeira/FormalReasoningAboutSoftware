@@ -162,6 +162,8 @@ Skipped (3-star or advanced, not required): `nonzeros_app`, `remove_does_not_inc
 - Argument annotations can be omitted when Coq can infer them from use (`repeat'`), but keep them for readability.
 - Parse gotcha: `f @g X` is a syntax error; write `f (@g X)`.
 - `prod X Y` is the type `X * Y`. Build a pair with `(a, b)` (`pair a b`), not `prod a b`.
+- Notation scopes: `Notation "X * Y" := (prod X Y) : type_scope` means `*` is the pair type where a type is expected and `mult` on numbers elsewhere. Force a scope with `(nat * bool)%type`.
+- Several type parameters: `forall X Y Z : Type, ...` (spaces, one comma), e.g. `@prod_curry : forall X Y Z : Type, (X * Y -> Z) -> X -> Y -> Z`.
 - `->` is right-associative: `(X * Y -> Z) -> X -> Y -> Z` means the first argument is a function.
 - `Check e.` prints the type; `Check e : T.` fails unless `e` has type `T`. `Fail Check ...` records an expected error and still compiles.
 - Use `let (a, b) := e in body` (short for `match e with (a, b) => body end`) to compute `e` once and destructure it.
